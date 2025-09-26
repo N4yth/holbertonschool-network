@@ -1,0 +1,103 @@
+# What Happens When we Type `https://www.google.com` in our Browser?
+
+In this post, I’ll walk through the journey from our keyboard to the moment Google’s homepage appears in our browser, covering DNS, TCP/IP, firewalls, HTTPS, load balancers, web servers, application servers, and databases.
+
+---
+
+## 1. DNS Request
+
+When we type `https://www.google.com`, our browser needs to translate the human-readable domain into a machine-readable IP address.
+
+* The browser first checks its cache.
+* If not found, it asks the operating system, which may query a DNS resolver (often our ISP’s or a public one like Google’s 8.8.8.8).
+* The DNS resolver works through the DNS hierarchy (root → TLD → authoritative server) to resolve `www.google.com` into an IP address, e.g. `142.250.190.68`.
+
+Now our browser knows where to send the request.
+
+---
+
+## 2. TCP/IP Handshake
+
+our browser establishes a connection to the server using the TCP/IP stack.
+
+* IP ensures our packets know the destination address.
+* TCP sets up a reliable, ordered connection via the three-way handshake: SYN → SYN/ACK → ACK.
+
+At this point, our computer and Google’s server are ready to exchange data reliably over the internet.
+
+---
+
+## 3. Firewall Checks
+
+Before our packet even reaches Google’s infrastructure, it may pass through firewalls.
+
+firewalls ensure that only valid, allowed connections enter their network.
+This layer adds security by blocking unwanted or malicious traffic.
+
+---
+
+## 4. HTTPS and SSL/TLS
+
+Since we requested `https://www.google.com`, the browser must establish a secure channel:
+
+* The browser and server perform a TLS handshake, exchanging cryptographic keys.
+* Certificates are checked against trusted Certificate Authorities (CAs) to ensure authenticity.
+* From now on, data is encrypted, protecting it from eavesdroppers.
+
+---
+
+## 5. Load Balancer
+
+Our request doesn’t go directly to a single server. Google operates at massive scale, so a load balancer decides which backend server should handle our request.
+
+* Load balancers distribute traffic across servers to maximize performance and availability.
+* They can also detect unhealthy servers and reroute requests automatically.
+
+we, as the user, never notice this—it’s seamless.
+
+---
+
+## 6. Web Server
+
+The chosen backend machine first runs a web server (like Nginx, Apache, or Google’s proprietary solutions).
+
+* The web server handles the HTTP(S) request.
+* It serves static assets like HTML, CSS, and images.
+* For dynamic content, it passes the request deeper into the stack.
+
+---
+
+## 7. Application Server
+
+Dynamic behavior—such as search logic—happens in the application server.
+
+* Here, application code written in C++, Java, or Python runs.
+* Business logic is executed (e.g., preparing the HTML for Google’s search homepage).
+* The application server may make database queries or call internal APIs.
+
+---
+
+## 8. Database
+
+Behind the application server lies the database.
+
+* The database stores persistent information (e.g., user profiles, personalization settings).
+* Google uses highly distributed, custom-built databases (like Spanner).
+* The app server retrieves the data, processes it, and sends a response upstream.
+
+---
+
+## 9. Response to Browser
+
+The application server’s output flows back through the web server, to the load balancer, across the secure TLS channel, and finally into our browser.
+
+* our browser receives HTML, CSS, and JavaScript.
+* The browser parses the HTML into the DOM, fetches linked resources, and executes JavaScript.
+* Finally, we see Google’s homepage rendered on our screen.
+
+---
+
+## Conclusion
+
+From typing a URL to seeing a page, dozens of systems work together: DNS for address resolution, TCP/IP for connectivity, firewalls for security, HTTPS for encryption, load balancers for scalability, web and application servers for request handling, and databases for persistence.
+
